@@ -1,67 +1,34 @@
-<HTML> 
-<HEAD> 
-  
-  
-<SCRIPT type=text/javascript>
- 
-// Category Lists
- 
-var categories = new Array();
-categories['Travel_Coupons'] = new Array('Abhibus.com','RedBus.in','MakemyTrip.com','Travelyaari.com');
-categories['Electronics_Coupons'] = new Array('FlipKart.com','shopping.com','deals.in','shopxyz.in');
-categories['Fashion_Coupons'] = new Array('jabong.com','xyz.com','fashion.com');
-categories['Gift_Coupons'] = new Array('giftshop.in','gifts.in','sendgifts.com','freegifts.in');
- 
-// State lists
-var states = new Array();
- 
-states['Travel_Coupons'] = new Array('Alberta','British Columbia','Ontario');
-states['Electronics_Coupons'] = new Array('Baja California','Chihuahua','Jalisco');
-states['Gift_Coupons'] = new Array('California','Florida','New York');
- 
-function changeStates() {
-  cntrySel = document.getElementById('Category');
-  stateList = categories[cntrySel.value];
-  changeSelect('Website', stateList, stateList);  
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+url = "http://im.someline.com/mha/"
+data = {}
+$.ajax({
+  dataType: "jsonp",
+  url: url,
+  data: data,
+  success: function(data){
+alert("success")
+console.log(data)
+$(".hi").html(JSON.stringify(data, null, 4))
+},
+error: function(data){
+alert("failed")
+console.log(data)
 }
-function changeSelect(fieldID, newOptions, newValues) {
-  selectField = document.getElementById(fieldID);
-  selectField.options.length = 0;
-  for (i=0; i<newOptions.length; i++) {
-    selectField.options[selectField.length] = new Option(newOptions[i], newValues[i]);
-  }
-}
-function addLoadEvent(func) {
-  var oldonload = window.onload;
-  if (typeof window.onload != 'function') {
-    window.onload = func;
-  } else {
-    window.onload = function() {
-      if (oldonload) {
-        oldonload();
-      }
-      func();
-    }
-  }
-}
- 
-addLoadEvent(function() {
-  changeStates();
 });
-</SCRIPT> 
-<SCRIPT type=text/javascript src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></SCRIPT> 
-  
-  
-  
-    <DIV style="BORDER-BOTTOM: #ccc 1px solid; PADDING-BOTTOM: 3px; PADDING-TOP: 3px; PADDING-LEFT: 2px; PADDING-RIGHT: 2px">Ajax Form</DIV>   
-    <FORM id=ff method=post action=http://html5.neq3.com/CouponsApp/addcoupon.php> 
-  
-<TABLE><TBODY><TR><TD>Category:</TD></TR><TR><TD><SELECT onchange=changeStates(); id=Category name=Category> <OPTION selected value=Travel_Coupons>Travel Coupons</OPTION> <OPTION value=Electronics_Coupons>Electronics Coupons</OPTION> <OPTION value=Fashion_Coupons>Fashion Coupons</OPTION> <OPTION value=Gift_Coupons>Gift Coupons</OPTION></SELECT> </TD></TR><TR><TD>Website:</TD></TR><TR><TD><SELECT onchange=changeCities(); id=Website name=Website><OPTION selected value=Abhibus.com>Abhibus.com</OPTION><OPTION value=RedBus.in>RedBus.in</OPTION><OPTION value=MakemyTrip.com>MakemyTrip.com</OPTION><OPTION value=Travelyaari.com>Travelyaari.com</OPTION> </SELECT> </TD></TR><TR><TD>CouponTitle : <INPUT id=CouponTitle name=CouponTitle></TD></TR><TR><TD>CouponDescription : <INPUT id=CouponDescription name=CouponDescription></TD></TR><TR><TD>CouponCode : <INPUT id=CouponCode name=CouponCode></TD></TR><TR><TD>AffiliateLink : <INPUT id=AffiliateLink name=AffiliateLink></TD></TR><TR><TD>AffiliateImage :<INPUT id=AffiliateImage name=AffiliateImage></TD></TR><TR><TD><INPUT type=submit value=Submit></INPUT></TD></TR></TBODY></TABLE> 
-</FORM> 
-<SCRIPT type=text/javascript>
-$('#ff').form({  
-    success:function(data){  
-        $.messager.alert('Info', data, 'info');  
-    }  
+  });
 });
-</SCRIPT>
+</script>
+</head>
+<body>
+
+<button>Get JSON data</button>
+<div class="hi"></div>
+
+</body>
+</html>
