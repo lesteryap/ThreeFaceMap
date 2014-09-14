@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html style="width: 100%;">
+<head>
+<title>Simple Map</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<style>
+    html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+        width: 0%; /*change in div "map-canvas"*/
+    }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<!--date-->
+<script type="text/javascript">
+
+    /***********************************************
+     * Drop Down Date select script- by JavaScriptKit.com
+     * This notice MUST stay intact for use
+     * Visit JavaScript Kit at http://www.javascriptkit.com/ for this script and more
+     ***********************************************/
+
+    var monthtext = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+
+    function populatedropdown(dayfield, monthfield, yearfield) {
+        var today = new Date()
+        var dayfield = document.getElementById(dayfield)
+        var monthfield = document.getElementById(monthfield)
+        var yearfield = document.getElementById(yearfield)
+        for (var i = 0; i < 31; i++)
+            dayfield.options[i] = new Option(i + 1, i + 1)
+        dayfield.options[today.getDate()] = new Option(today.getDate(), today.getDate(), true, true) //select today's day
+        for (var m = 0; m < 12; m++)
+            monthfield.options[m] = new Option(monthtext[m], m + 1)
+        monthfield.options[today.getMonth()] = new Option(monthtext[today.getMonth()], today.getMonth() + 1, true, true) //select today's month
+        var thisyear = today.getFullYear()
+        for (var y = 0; y < 10; y++) {
+            yearfield.options[y] = new Option(thisyear, thisyear)
+            thisyear -= 1
+        }
+        yearfield.options[0] = new Option(today.getFullYear(), today.getFullYear(), true, true) //select today's year
+    }
+
+</script>
+<!--//date-->
+
+
+<script>
+
+    //(Getting clicked location)
+    var latitude;
+    var longitude;
+
+    //(marker validate)
+    var setMarker = false;
+
+
+    var map;
+    function initialize() {
+        var mapOptions = {
+            zoom: 11,
+            center: new google.maps.LatLng(1.3469268, 103.8378561)
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+
+
+        var maxNumberOfMarkers = 1;
+        var currentNumberOfMarkers = 0;
+
+        /////Adding marker
+        ///Adding events
+        google.maps.event.addListener(map, 'click', function (event) {
+            if (currentNumberOfMarkers >= maxNumberOfMarkers) {
+                return;
+            }
+            currentNumberOfMarkers++;
+            placeMarker(event.latLng);
+
+            latitude = event.latLng.lat();
+            longitude = event.latLng.lng();
+        });
+////////////////////
+
+
+        function placeMarker(location) {
+
+            ///@TODO:validation of marker
+            setMarker = true;
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                draggable: true
+
+            });
+//                google.maps.event.addListener(marker, 'dragend', function (event) {
+//                    alert('Lat: ' + event.latLng.lat() + ' and Longitude is: ' + event.latLng.lng());
+//                });
+        }
+
+
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+
+
+    $(function () {
+        /////>>>>>>>>>>>>>>>>>>>><<<<<option>>
+        $.ajax({
+            type: "POST",
+            url: "http://im.someline.com/mha/crimetype.php",
+//                data: "postData",
+            dataType: "JSON",
+            cache: false,
+            success: function (data) {
+                $("#data").empty();
+//                            the_flowers = $.parseJSON(msg);
+                console.log(data);///////
+
+                $("#crime_class").append("<option value='0'>select a Crime Class...</option>");
+
+
+                for (i = 0; i < data.length; i++) {
+
+
+                    $("#crime_class").append("<option value='" +
+                            data[i].id + "'>" +
+                            data[i].name + "</option>");
+                }
+                $("#data").trigger('change');
+            }
+        });
+
+
+        $.ajax({
+            type: "POST",
+            url: "http://im.someline.com/mha/area.php",
+//                data: "postData",
+            dataType: "JSON",
+            cache: false,
+            success: function (data) {
+                $("#data").empty();
+//                            the_flowers = $.parseJSON(msg);
+                console.log(data);///////
+
+                $("#Area").append("<option value='0'>select an Area...</option>");
+
+
+                for (i = 0; i < data.length; i++) {
+
+
+                    $("#Area").append("<option value='" +
+                            data[i].id + "'>" +
+                            data[i].name + "</option>");
+                }
+                $("#data").trigger('change');
+            }
+        });
+
+
+        ////On submit form data
+        $("form").submit(function (event) {
+            event.preventDefault(); //prevent default;
+            //POST data here<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>
+            // @TODO: change something
+            if (setMarker == true) {
+                postData = {
+                    type_id: $("#crime_class").val(),
+                    area_id: $("#Area").val(),
+                    description: $("#Description").val(),
+                    latitude: latitude,
+                    longitude: longitude,
+                    day: $("#daydropdown").val(),
+                    month: $("#monthdropdown").val(),
+                    year: $("#yeardropdown").val(),
+                    token: localStorage.getItem("token")
+
+                };
+
+                console.log("POST DATA LOGGED")
+                console.log(postData);
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://im.someline.com/mha/addNPCdata.php",
+                    data: postData,
+                    dataType: "JSON",
+                    cache: false,
+                    success: function (data) {
+//                        console.log(data);
+
+
+                    }
+                });
+
+            }else{
+                alert("Please select a location...");
+            }
+        });
+
+    });
+    /////>>><<<<<<<<<<<<option>>
+
+    if (typeof(Storage) != "undefined") {
+        // Retrieve
+        alert(localStorage.getItem("token"));
+    } else {
+        alert("Sorry, your browser does not support Web Storage...");
+    }
+
+
+</script>
+</head>
+<body style="width: 100%;">
+<div id="map-canvas" style="float: left; width: 50%;"></div>
+
+<form>
+
+    <div style="float: left; padding: 20px;">
+
+        <label>Crime Class: </label>
+        <select id="crime_class">
+        </select>
+
+        <br>
+
+        <label>Area: </label>
+        <select id="Area">
+        </select>
+
+        <br>
+
+        <label>Description: </label>
+
+        <div>
+            <textarea id="Description"></textarea>
+        </div>
+
+        <br>
+
+        <select id="daydropdown">
+        </select>
+        <select id="monthdropdown">
+        </select>
+        <select id="yeardropdown">
+        </select>
+
+        <input type="submit">
+
+    </div>
+
+</form>
+
+
+<script type="text/javascript">
+
+    //populatedropdown(id_of_day_select, id_of_month_select, id_of_year_select)
+    window.onload = function () {
+        populatedropdown("daydropdown", "monthdropdown", "yeardropdown")
+    }
+</script>
+
+</body>
+</html>
