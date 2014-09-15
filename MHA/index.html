@@ -63,6 +63,11 @@
 
                 });
                 window.location.href="Add_NPC_Data.html";
+                $( document ).bind( "mobileinit", function() {
+                    // Make your jQuery Mobile framework configuration changes here!
+
+                    $.mobile.allowCrossDomainPages = true;
+                });
             });
 
         });
