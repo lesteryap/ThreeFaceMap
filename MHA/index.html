@@ -1,32 +1,92 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>PhoneGap</title>
-
+    <title></title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="cordova-1.5.0.js"></script>
-    <script type="text/javascript" charset="utf-8">
 
-        function onLoad()
-        {
-            document.addEventListener("deviceready", onDeviceReady, true);
-        }
+<script>
+    function onLoad()
+    {
+    document.addEventListener("deviceready", onDeviceReady, true);
+    }
+</script>
 
-        function onDeviceReady()
-        {
-            // navigator.notification.alert("PhoneGap is working");
-        }
+    <script>
+        $(function () {
 
-        function callAnotherPage()
-        {
-            window.location = "test.html";
-        }
+
+            var RE_EMAIL = /^(\w+[\-\.])*\w+@(\w+\.)+[A-Za-z]+$/;
+
+            $("form").submit(function (event) {
+                event.preventDefault(); //prevent default
+
+                if (!RE_EMAIL.test($(".email").val())) {
+                    alert("Invalid email format");
+                    return;
+                }
+
+                postData = {
+                    email: $(".email").val(),
+                    password: $(".password").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://im.someline.com/mha/login.php",
+                    data: postData,
+                    dataType: "json",
+
+                    success: function (data) {
+                        console.log(postData);
+                        var dataString = JSON.stringify(data, null, 4);
+
+                        alert(data.msg);
+                        console.log(dataString);
+
+//                        $.each(data, function (key, val) {
+////                        example on how to get the address field.
+//                            // you can use the data you brought over for validation.
+//                            console.log(val.address);
+//                        });
+
+                        //>>>>>>>>>>>>>>>Local Storage<<<<<<<<<<<<<<<<<<<<
+                        if (data.status == 1) {
+                            if (typeof(Storage) != "undefined") {
+                                // Store
+                                localStorage.setItem("token", data.token);
+                                // Retrieve
+                                alert(localStorage.getItem("token"));
+                            } else {
+                                alert("Sorry, your browser does not support Web Storage...");
+                            }
+
+                        }
+
+
+                    },
+                    fail: function () {
+                        alert("error")
+                    }
+
+                });
+
+                window.location.href="Add_NPC_Data.html";
+            });
+
+        });
+
 
     </script>
-
 </head>
-
 <body onload="onLoad();">
-<h1>Welcome to PhoneGap</h1>
-<h2>Edit assets/www/index.html</h2>
-<button name="buttonClick" onclick="callAnotherPage()">Click Me!</button>
+<a href="Add_NPC_Data.html">goto NPC page</a>
+<form>
+    Email: <input type="text" name="email" class="email">
+    Password: <input type="password" name="password" class="password">
+    <br>
+    <input type="submit" value="login">
+</form>
+
 </body>
+</html>
