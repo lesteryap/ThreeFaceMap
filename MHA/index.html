@@ -7,13 +7,6 @@
 
 
     <script>
-        function onLoad() {
-            document.addEventListener("deviceready", onDeviceReady, true);
-            alert("hello11");
-        }
-        function onDeviceReady() {
-            navigator.notification.alert("PhoneGap is working");
-        }
 
         $(function () {
 
@@ -73,7 +66,7 @@
 
                 });
 
-                window.location.href = "test.html";
+                window.location.href = "AddNPCData.html";
             });
 
         });
@@ -81,8 +74,8 @@
 
     </script>
 </head>
-<body onload="onLoad();">
-<a href="test.html">goto NPC page</a>
+<body>
+<a href="AddNPCData.html">goto NPC page</a>
 
 <form>
     Email: <input type="text" name="email" class="email">
